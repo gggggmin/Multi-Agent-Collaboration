@@ -7,7 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from framework.rag import DocumentParser, SemanticChunker, Retriever
-from framework.multi_agent import Coordinator, CaseCreator
+from framework.multi_agent import Coordinator, CaseCreator, AgentPipeline
 from framework.code_gen import PageAgent, TestAgent
 from framework.self_healing import SandboxExecutor, ErrorDiagnoser, HealingAgent
 from experiments.evaluation import Evaluator
@@ -126,6 +126,33 @@ def cmd_heal(args):
                 print("修复失败，所有策略均无效")
 
 
+def cmd_pipeline(args):
+    """运行完整智能体流水线"""
+    print("=" * 50)
+    print("  智能体实验流水线")
+    print("=" * 50)
+
+    pipeline = AgentPipeline(
+        modules=args.module or None,
+        use_rl=not args.no_rl,
+        output_dir=args.output,
+        execute_tests=args.execute,
+        heal_failures=args.heal,
+    )
+    result = pipeline.run()
+
+    metrics = result.get("metrics", {})
+    coverage = metrics.get("coverage", {})
+    hallucination = metrics.get("hallucination", {})
+    healing = metrics.get("healing", {})
+
+    print("\n流水线完成")
+    print(f"  用例数: {result.get('num_cases', 0)}")
+    print(f"  覆盖率: {coverage.get('coverage_pct', 'N/A')}%")
+    print(f"  幻觉率: {hallucination.get('hallucination_pct', 'N/A')}%")
+    print(f"  自愈成功率: {healing.get('success_rate_pct', 'N/A')}%")
+    print(f"  结果文件: {result.get('result_path')}")
+
 def cmd_train_rl(args):
     """训练 RL-AGS 模型"""
     print("=" * 50)
@@ -184,6 +211,14 @@ def main():
     p_heal.add_argument("--dir", default=".", help="工作目录")
     p_heal.add_argument("--fix", action="store_true", help="启用自动修复")
 
+    # 智能体流水线
+    p_pipeline = subparsers.add_parser("pipeline", help="运行完整智能体流水线")
+    p_pipeline.add_argument("--module", "-m", action="append", help="模块名，可重复传入")
+    p_pipeline.add_argument("--output", "-o", default="output", help="输出目录")
+    p_pipeline.add_argument("--no-rl", action="store_true", help="禁用 RL-AGS")
+    p_pipeline.add_argument("--execute", action="store_true", help="执行生成的测试脚本")
+    p_pipeline.add_argument("--heal", action="store_true", help="对失败脚本启用自愈")
+
     # RL 训练
     p_rl = subparsers.add_parser("train-rl", help="训练 RL-AGS 模型")
     p_rl.add_argument("--timesteps", type=int, default=10000,
@@ -203,6 +238,7 @@ def main():
         "generate": cmd_generate,
         "codegen": cmd_codegen,
         "heal": cmd_heal,
+        "pipeline": cmd_pipeline,
         "train-rl": cmd_train_rl,
         "experiment": cmd_experiment,
     }
