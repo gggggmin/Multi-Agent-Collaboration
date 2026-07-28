@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}结算 - 电商演示系统{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:16px;">📋 确认订单</h2>
+
+<div class="card">
+    <h3 style="margin-bottom:12px;">商品清单</h3>
+    {% for item in items %}
+        {% set p = products[item.product_id] %}
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;">
+            <span>{{ p.name }} × {{ item.quantity }}</span>
+            <span>¥{{ "%.2f"|format(p.price * item.quantity) }}</span>
+        </div>
+    {% endfor %}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:18px;font-weight:bold;">
+        <span>合计</span>
+        <span style="color:#e74c3c;">¥{{ "%.2f"|format(total) }}</span>
+    </div>
+</div>
+
+<div class="card">
+    <form method="POST">
+        <div style="margin-bottom:16px;">
+            <label style="display:block;margin-bottom:4px;font-size:14px;">收货地址 <span style="color:red;">*</span></label>
+            <input type="text" name="address" required placeholder="请填写详细收货地址"
+                   style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;">
+        </div>
+        <div style="margin-bottom:20px;">
+            <label style="display:block;margin-bottom:4px;font-size:14px;">支付方式</label>
+            <select name="payment" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;">
+                <option value="微信支付">微信支付</option>
+                <option value="支付宝">支付宝</option>
+                <option value="银行卡">银行卡</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;padding:10px;font-size:16px;">提交订单</button>
+    </form>
+</div>
+{% endblock %}

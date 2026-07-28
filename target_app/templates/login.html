@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}登录 - 电商演示系统{% endblock %}
+{% block content %}
+<div style="max-width:400px;margin:60px auto;">
+    <div class="card" style="padding:32px;">
+        <h2 style="text-align:center;margin-bottom:24px;">用户登录</h2>
+        <form method="POST">
+            <div style="margin-bottom:16px;">
+                <label style="display:block;margin-bottom:4px;font-size:14px;">用户名</label>
+                <input type="text" name="username" required
+                       style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;">
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="display:block;margin-bottom:4px;font-size:14px;">密码</label>
+                <input type="password" name="password" required
+                       style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;padding:10px;font-size:16px;">登 录</button>
+        </form>
+        <p style="text-align:center;margin-top:16px;font-size:13px;color:#888;">
+            测试账号: testuser / password123
+        </p>
+    </div>
+</div>
+{% endblock %}

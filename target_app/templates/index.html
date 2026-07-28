@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}商品列表 - 电商演示系统{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:16px;">商品列表</h2>
+
+<form method="GET" action="{{ url_for('index') }}" style="margin-bottom:20px;display:flex;gap:8px;">
+    <input type="text" name="keyword" placeholder="搜索商品..." value="{{ keyword }}"
+           style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:6px;">
+    <select name="category" style="padding:8px;border:1px solid #ddd;border-radius:6px;">
+        {% for cat in categories %}
+            <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">搜索</button>
+</form>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">
+    {% for p in products %}
+        <div class="card" style="text-align:center;">
+            <div style="font-size:48px;margin-bottom:8px;">
+                {% if p.category == "笔记本" %}💻{% elif p.category == "手机" %}📱{% elif p.category == "耳机" %}🎧{% else %}📦{% endif %}
+            </div>
+            <h3>{{ p.name }}</h3>
+            <p style="color:#666;font-size:14px;">{{ p.category }}</p>
+            <p style="font-size:20px;color:#e74c3c;font-weight:bold;margin:8px 0;">¥{{ "%.2f"|format(p.price) }}</p>
+            <p style="font-size:13px;color:#888;">
+                库存: {% if p.stock > 0 %}<span style="color:#27ae60;">{{ p.stock }}</span>{% else %}<span style="color:#e74c3c;">无货</span>{% endif %}
+            </p>
+            <form method="POST" action="{{ url_for('cart_add') }}" style="margin-top:8px;">
+                <input type="hidden" name="product_id" value="{{ p.id }}">
+                <button type="submit" class="btn btn-primary" {% if p.stock <= 0 %}disabled style="opacity:0.5;"{% endif %}>
+                    {% if p.stock > 0 %}加入购物车{% else %}暂时缺货{% endif %}
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <p style="grid-column:1/-1;text-align:center;padding:40px;color:#888;">没有找到匹配的商品</p>
+    {% endfor %}
+</div>
+{% endblock %}

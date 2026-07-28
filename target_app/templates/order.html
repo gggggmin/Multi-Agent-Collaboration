@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}订单详情 - 电商演示系统{% endblock %}
+{% block content %}
+<div style="max-width:600px;margin:0 auto;">
+    <div class="card" style="text-align:center;padding:32px;">
+        <div style="font-size:48px;margin-bottom:12px;">✅</div>
+        <h2>订单提交成功！</h2>
+        <p style="color:#888;margin:8px 0;">订单号: <strong>{{ order.id }}</strong></p>
+        <p style="color:#888;">下单时间: {{ order.created_at }}</p>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom:12px;">商品清单</h3>
+        {% for item in order.items %}
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;">
+                <span>{{ item.product_name }} × {{ item.quantity }}</span>
+                <span>¥{{ "%.2f"|format(item.price * item.quantity) }}</span>
+            </div>
+        {% endfor %}
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:18px;font-weight:bold;">
+            <span>合计</span>
+            <span style="color:#e74c3c;">¥{{ "%.2f"|format(order.total) }}</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <p><strong>收货地址：</strong>{{ order.address }}</p>
+        <p><strong>支付方式：</strong>{{ order.payment_method }}</p>
+        <p><strong>订单状态：</strong>{{ order.status }}</p>
+    </div>
+
+    <div style="text-align:center;margin-top:16px;">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">继续购物</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}购物车 - 电商演示系统{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:16px;">🛍️ 购物车</h2>
+
+{% if items %}
+    {% for item in items %}
+        {% set p = products[item.product_id] %}
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+                <strong>{{ p.name }}</strong>
+                <span style="color:#888;font-size:14px;margin-left:8px;">¥{{ "%.2f"|format(p.price) }}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <form method="POST" action="{{ url_for('cart_update') }}" style="display:inline;">
+                    <input type="hidden" name="product_id" value="{{ p.id }}">
+                    <input type="hidden" name="action" value="decrease">
+                    <button type="submit" class="btn" style="background:#eee;padding:4px 10px;">−</button>
+                </form>
+                <span>{{ item.quantity }}</span>
+                <form method="POST" action="{{ url_for('cart_update') }}" style="display:inline;">
+                    <input type="hidden" name="product_id" value="{{ p.id }}">
+                    <input type="hidden" name="action" value="increase">
+                    <button type="submit" class="btn" style="background:#eee;padding:4px 10px;">+</button>
+                </form>
+                <span style="margin-left:8px;font-weight:bold;">¥{{ "%.2f"|format(p.price * item.quantity) }}</span>
+                <form method="POST" action="{{ url_for('cart_delete') }}" style="display:inline;margin-left:8px;">
+                    <input type="hidden" name="product_id" value="{{ p.id }}">
+                    <button type="submit" class="btn btn-danger" style="padding:4px 10px;font-size:12px;">删除</button>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+    <div style="text-align:right;margin-top:16px;">
+        <p style="font-size:20px;font-weight:bold;">合计: ¥{{ "%.2f"|format(total) }}</p>
+        <a href="{{ url_for('checkout') }}" class="btn btn-primary" style="margin-top:8px;">去结算</a>
+    </div>
+{% else %}
+    <div class="card" style="text-align:center;padding:40px;">
+        <p style="font-size:48px;margin-bottom:8px;">🛒</p>
+        <p style="color:#888;">购物车是空的</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-top:12px;">去逛逛</a>
+    </div>
+{% endif %}
+{% endblock %}
