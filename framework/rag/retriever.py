@@ -1,19 +1,30 @@
 """向量检索器 — 基于 ChromaDB 的语义检索"""
 import os
+from pathlib import Path
+
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+os.environ.setdefault(
+    "HF_HOME",
+    str(Path(__file__).resolve().parents[2] / ".cache" / "huggingface"),
+)
 
 import chromadb
 from chromadb.config import Settings
-from chromadb.errors import NotFoundError as ChromaNotFoundError
 from typing import List, Dict, Optional
 from .document_parser import Chunk
-from config import CHROMA_PERSIST_DIR, CHROMA_COLLECTION_NAME, RETRIEVAL_TOP_K
+from config import (
+    CHROMA_PERSIST_DIR,
+    CHROMA_COLLECTION_NAME,
+    EMBEDDING_BACKEND,
+    RETRIEVAL_TOP_K,
+)
 
 
 class EmbeddingEngine:
     """嵌入引擎 — 优先使用 sentence-transformers，否则用 TF-IDF 降级"""
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
         self.model_name = model_name
+        self.backend = os.getenv("EMBEDDING_BACKEND", EMBEDDING_BACKEND).lower()
         self._encoder = None
         self._use_tfidf = False
         self._vectorizer = None
@@ -21,6 +32,18 @@ class EmbeddingEngine:
 
     def _init_encoder(self):
         if self._encoder is not None or self._use_tfidf:
+            return
+        if self.backend in ("", "tfidf"):
+            self._use_tfidf = True
+            from sklearn.feature_extraction.text import TfidfVectorizer
+            self._vectorizer = TfidfVectorizer(max_features=512)
+            print("[Embedding] 使用 TF-IDF 嵌入方案")
+            return
+        if self.backend not in ("sentence-transformers", "semantic", "hf"):
+            print(f"[Embedding] 未知嵌入后端 '{self.backend}'，使用 TF-IDF 降级方案")
+            self._use_tfidf = True
+            from sklearn.feature_extraction.text import TfidfVectorizer
+            self._vectorizer = TfidfVectorizer(max_features=512)
             return
         try:
             from sentence_transformers import SentenceTransformer
@@ -78,18 +101,17 @@ class Retriever:
 
     def build_index(self, chunks: List[Chunk]) -> None:
         """将切片写入向量数据库"""
-        # 清空重建
-        try:
-            self.client.delete_collection(self.collection_name)
-        except (ValueError, ChromaNotFoundError):
-            pass
-        self._collection = self.client.create_collection(self.collection_name)
-
         texts = [c.content for c in chunks]
         ids = [f"{c.module}_{i}" for i, c in enumerate(chunks)]
         metadatas = [c.to_dict() for c in chunks]
 
         embeddings = self.encoder.encode(texts)
+
+        self._collection = self.client.get_or_create_collection(self.collection_name)
+        existing = self._collection.get()
+        existing_ids = existing.get("ids", [])
+        if existing_ids:
+            self._collection.delete(ids=existing_ids)
 
         self.collection.add(
             embeddings=embeddings,
@@ -119,7 +141,7 @@ class Retriever:
 
         return retrieved
 
-    def retrieve_by_module(self, module: str, top_k: int = 5) -> List[Dict]:
+    def retrieve_by_module(self, module: str, top_k: Optional[int] = None) -> List[Dict]:
         """按模块名"""
         results = self.collection.get(
             where={"module": module},
@@ -131,5 +153,6 @@ class Retriever:
                 "content": results["documents"][i],
                 "metadata": results["metadatas"][i],
             })
-        # limit
+        if top_k is None:
+            return items
         return items[:top_k]

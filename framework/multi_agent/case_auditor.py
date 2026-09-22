@@ -78,7 +78,7 @@ class CaseAuditor(BaseAgent):
 请逐一检查每个用例的一致性和完备性。"""
 
         response = self.chat([{"role": "user", "content": prompt}])
-        return self._parse_response(response, cases)
+        return self._parse_response(response, cases, requirement_chunks)
 
     def _format_requirements(self, chunks: List[Dict]) -> str:
         """格式化需求片段"""
@@ -91,10 +91,11 @@ class CaseAuditor(BaseAgent):
             parts.append(f"[{i}] 模块={module}, 功能={func}\n{content}")
         return "\n\n".join(parts)
 
-    def _parse_response(self, response: str, cases: List[Dict]) -> Dict:
+    def _parse_response(self, response: str, cases: List[Dict],
+                        requirement_chunks: List[Dict]) -> Dict:
         """解析审计结果"""
         if not response or response.startswith("__FALLBACK__"):
-            return self._mock_audit(cases)
+            return self._mock_audit(cases, requirement_chunks)
 
         try:
             start = response.index("{")
@@ -104,11 +105,54 @@ class CaseAuditor(BaseAgent):
             try:
                 return json.loads(response)
             except json.JSONDecodeError:
-                return self._mock_audit(cases)
+                return self._mock_audit(cases, requirement_chunks)
 
-    def _mock_audit(self, cases: List[Dict]) -> Dict:
+    def _mock_audit(self, cases: List[Dict],
+                    requirement_chunks: List[Dict] = None) -> Dict:
         """降级审计：基于规则的一致性/完备性检查"""
         issues = []
+        requirement_chunks = requirement_chunks or []
+        req_text = "\n".join(
+            c.get("content", "") if isinstance(c, dict) else getattr(c, "content", "")
+            for c in requirement_chunks
+        )
+        req_text_lower = req_text.lower()
+
+        ambiguous_terms = ["待定", "尽快", "适当", "若干", "合理", "可能", "视情况", "必要时"]
+        conflict_pairs = [
+            ("必须登录", "无需登录"),
+            ("允许", "不允许"),
+            ("可以为空", "不能为空"),
+            ("跳转登录页", "可以访问"),
+            ("按钮可点击", "按钮不可点击"),
+        ]
+
+        for term in ambiguous_terms:
+            if term in req_text:
+                issues.append({
+                    "severity": "warning",
+                    "type": "ambiguous_requirement",
+                    "test_id": "REQ",
+                    "description": f"需求包含模糊词 '{term}'，可能导致生成用例不可验证",
+                    "suggestion": "将模糊表述改为可观察、可断言的结果",
+                })
+
+        for chunk in requirement_chunks:
+            content = chunk.get("content", "") if isinstance(chunk, dict) else getattr(chunk, "content", "")
+            func_name = (
+                chunk.get("metadata", {}).get("func_name", "REQ")
+                if isinstance(chunk, dict)
+                else getattr(chunk, "func_name", "REQ")
+            )
+            for left, right in conflict_pairs:
+                if left in content and right in content:
+                    issues.append({
+                        "severity": "error",
+                        "type": "conflicting_requirement",
+                        "test_id": "REQ",
+                        "description": f"需求 '{func_name}' 同时包含冲突表述：'{left}' 与 '{right}'",
+                        "suggestion": "先消解需求冲突，再进入测试用例生成",
+                    })
         for case in cases:
             tid = case.get("test_id", "unknown")
             steps = case.get("steps", [])
@@ -132,6 +176,24 @@ class CaseAuditor(BaseAgent):
                     "description": "用例缺少预期结果",
                     "suggestion": "补充预期结果",
                 })
+
+            requirement = case.get("requirement", "") or case.get("title", "")
+            if requirement and requirement.lower() not in req_text_lower:
+                title = case.get("title", "")
+                import re
+                raw_tokens = re.split(r"[\s\-_/（）()：:，,、]+", f"{requirement} {title}")
+                title_tokens = [
+                    token for token in raw_tokens
+                    if len(token) >= 2 and token.lower() in req_text_lower
+                ]
+                if not title_tokens:
+                    issues.append({
+                        "severity": "error",
+                        "type": "hallucination",
+                        "test_id": tid,
+                        "description": f"用例 '{requirement}' 在需求文本中找不到依据",
+                        "suggestion": "删除该用例，或补充对应需求来源",
+                    })
 
             if case_type == "边界值":
                 title = case.get("title", "")

@@ -89,7 +89,6 @@ class HealingAgent(BaseAgent):
             )
 
             if fixed_code:
-                success = True
                 history.append({
                     "attempt": attempt,
                     "strategy": strategy,
@@ -98,15 +97,11 @@ class HealingAgent(BaseAgent):
                     "diagnosis": diagnosis,
                 })
 
-                # 更新 Bandit 反馈
-                if self.bandit:
-                    self.bandit.update(strategy, error_category, success)
-                    self.bandit.save()
-
                 return {
                     "success": True,
                     "attempts": attempt,
                     "strategy": strategy,
+                    "error_category": error_category,
                     "fixed_code": fixed_code,
                     "history": history,
                 }
@@ -123,12 +118,30 @@ class HealingAgent(BaseAgent):
             "success": False,
             "attempts": attempt,
             "strategy": strategy,
+            "error_category": error_category,
             "fixed_code": current_code,
             "history": history,
         }
 
+    def record_strategy_result(self, strategy: str, error_category: str,
+                               success: bool) -> None:
+        """在外部验证完成后反馈策略效果。"""
+        if self.bandit:
+            self.bandit.update(strategy, error_category, success)
+            self.bandit.save()
+
     def _select_strategy(self, error_category: str, diagnosis: Dict) -> str:
         """选择修复策略"""
+        diagnosis_text = "\n".join([
+            str(diagnosis.get("traceback", "")),
+            str(diagnosis.get("suggestion", "")),
+            str(diagnosis.get("matched_keyword", "")),
+        ]).lower()
+        if error_category == "locator" or "strict mode violation" in diagnosis_text:
+            return "rule_locator"
+        if error_category == "timeout":
+            return "rule_timeout"
+
         if self.bandit:
             return self.bandit.select_strategy(error_category)
 
@@ -149,7 +162,7 @@ class HealingAgent(BaseAgent):
         if strategy == "llm_rewrite":
             return self._fix_via_llm(code, diagnosis, history)
         elif strategy == "rule_locator":
-            return self._fix_via_rule_locator(code)
+            return self._fix_via_rule_locator(code, diagnosis)
         elif strategy == "rule_timeout":
             return self._fix_via_rule_timeout(code)
         elif strategy == "fallback":
@@ -162,7 +175,7 @@ class HealingAgent(BaseAgent):
         response = self.chat([{"role": "user", "content": prompt}])
         return self._extract_code(response)
 
-    def _fix_via_rule_locator(self, code: str) -> Optional[str]:
+    def _fix_via_rule_locator(self, code: str, diagnosis: Optional[Dict] = None) -> Optional[str]:
         """策略2: 规则替换元素定位器
 
         处理常见的定位器失效场景:
@@ -171,6 +184,30 @@ class HealingAgent(BaseAgent):
           - 添加重试逻辑
         """
         import re
+        diagnosis_text = ""
+        if diagnosis:
+            diagnosis_text = "\n".join([
+                str(diagnosis.get("traceback", "")),
+                str(diagnosis.get("suggestion", "")),
+            ]).lower()
+
+        replacements = {
+            'page.locator("button[type=\'submit\']").click()':
+                'page.get_by_role("button", name="搜索").click()',
+            'page.locator(\'button[type="submit"]\').click()':
+                'page.get_by_role("button", name="搜索").click()',
+            'page.click("button[type=\'submit\']")':
+                'page.get_by_role("button", name="搜索").click()',
+            'self.page.click(self.SEARCH_BUTTON)':
+                'self.page.get_by_role("button", name="搜索").click()',
+        }
+
+        fixed_code = code
+        for before, after in replacements.items():
+            fixed_code = fixed_code.replace(before, after)
+        if fixed_code != code:
+            return fixed_code
+
         lines = code.split("\n")
         fixed = []
         changed = False

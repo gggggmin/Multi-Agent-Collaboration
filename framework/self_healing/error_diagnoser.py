@@ -8,7 +8,9 @@ class ErrorDiagnoser:
 
     ERROR_CATEGORIES = {
         "locator": ["ElementNotFound", "TimeoutError", "NoSuchElement",
-                    "not found", "is not visible", "element not interactable"],
+                    "not found", "is not visible", "element not interactable",
+                    "strict mode violation", "resolved to",
+                    "waiting for locator", "Locator", "get_by_role", "aka"],
         "assertion": ["AssertionError", "assert", "assertion"],
         "timeout": ["timeout", "TimedOut", "Timeout"],
         "syntax": ["SyntaxError", "IndentationError", "NameError"],

@@ -144,6 +144,7 @@ class AgentPipeline:
         print("[Pipeline] 5/5 heal failed tests")
         diagnoser = ErrorDiagnoser()
         healer = HealingAgent()
+        executor = SandboxExecutor(str(self.output_dir))
         healed = []
         for result in execution_results:
             if result.get("success"):
@@ -152,6 +153,18 @@ class AgentPipeline:
             diagnosis = diagnoser.diagnose(result)
             script_content = script_path.read_text(encoding="utf-8")
             heal_result = healer.heal(script_content, diagnosis)
+            if heal_result.get("fixed_code"):
+                fixed_path = script_path.with_name(f"{script_path.stem}_healed.py")
+                fixed_path.write_text(heal_result["fixed_code"], encoding="utf-8")
+                verification = executor.run_script(str(fixed_path))
+                heal_result["fixed_script"] = str(fixed_path)
+                heal_result["verification"] = verification
+                heal_result["success"] = verification.get("success", False)
+                healer.record_strategy_result(
+                    heal_result.get("strategy", "unknown"),
+                    heal_result.get("error_category", "unknown"),
+                    heal_result["success"],
+                )
             heal_result["script"] = str(script_path)
             heal_result["diagnosis"] = diagnosis
             healed.append(heal_result)

@@ -9,11 +9,15 @@ class SandboxExecutor:
     """沙箱执行器"""
 
     def __init__(self, work_dir: str = "."):
-        self.work_dir = Path(work_dir)
+        self.work_dir = Path(work_dir).resolve()
 
     def run_script(self, script_path: str, timeout: int = 30) -> Dict:
         """运行单个测试脚本"""
         spath = Path(script_path)
+        if not spath.is_absolute():
+            direct = spath.resolve()
+            work_relative = (self.work_dir / spath).resolve()
+            spath = direct if direct.exists() else work_relative
         if not spath.exists():
             return {"success": False, "error": f"脚本不存在: {script_path}",
                     "stdout": "", "stderr": ""}

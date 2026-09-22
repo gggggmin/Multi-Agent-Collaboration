@@ -1,4 +1,5 @@
 """Flask 电商演示系统 — 用作自动化测试框架的"被测系统" """
+import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from models import User, PRODUCTS, CATEGORIES, CartItem, Order
 
@@ -11,6 +12,7 @@ _users = {
     "admin": User("admin", "admin123", "admin@example.com"),
 }
 _orders = []
+_initial_stocks = {pid: product.stock for pid, product in PRODUCTS.items()}
 
 
 def get_cart():
@@ -211,6 +213,18 @@ def api_products():
 @app.route("/health")
 def health():
     return jsonify({"status": "ok"})
+
+
+@app.route("/test/reset", methods=["POST", "GET"])
+def test_reset():
+    """Reset in-memory demo state for generated E2E tests."""
+    if os.getenv("DISABLE_TEST_RESET") == "1":
+        return jsonify({"error": "test reset disabled"}), 403
+    _orders.clear()
+    for pid, stock in _initial_stocks.items():
+        PRODUCTS[pid].stock = stock
+    session.clear()
+    return jsonify({"status": "reset"})
 
 
 if __name__ == "__main__":

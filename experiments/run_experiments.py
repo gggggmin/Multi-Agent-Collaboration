@@ -239,6 +239,28 @@ def experiment_rl_comparison():
     return comparison
 
 
+def experiment_healing_demo():
+    """自愈实验：构造 strict-mode 定位器失败并验证自动修复。"""
+    print("\n" + "=" * 60)
+    print("  自愈实验: Playwright strict-mode locator")
+    print("=" * 60)
+
+    import subprocess
+    import sys
+
+    result = subprocess.run(
+        [sys.executable, "scripts/run_healing_demo.py"],
+        cwd=Path(__file__).parent.parent,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError("自愈实验失败")
+
+    output_path = RESULTS_DIR / "healing_demo.json"
+    with open(output_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 def _plot_ablation(data: Dict, save_path: str):
     """绘制消融实验对比柱状图"""
     try:
@@ -330,7 +352,7 @@ def _plot_rl_comparison(data: Dict, save_path: str):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="实验运行器")
-    parser.add_argument("--type", choices=["full", "ablation", "rl", "all"],
+    parser.add_argument("--type", choices=["full", "ablation", "rl", "healing", "all"],
                         default="all", help="实验类型")
     args = parser.parse_args()
 
@@ -340,3 +362,5 @@ if __name__ == "__main__":
         experiment_ablation()
     if args.type in ("rl", "all"):
         experiment_rl_comparison()
+    if args.type in ("healing", "all"):
+        experiment_healing_demo()

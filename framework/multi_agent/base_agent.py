@@ -7,10 +7,12 @@
 import json
 import os
 import traceback
+from datetime import datetime
+from pathlib import Path
 from typing import Optional, List, Dict
 
 from config import LLM_MODEL, LLM_TEMPERATURE, LLM_MAX_TOKENS, \
-    LLM_API_KEY, AUTOGEN_CONFIG_LIST
+    LLM_API_KEY, AUTOGEN_CONFIG_LIST, AGENT_TRACE_ENABLED, AGENT_TRACE_DIR
 
 
 class BaseAgent:
@@ -66,8 +68,34 @@ class BaseAgent:
             LLM 的文本响应
         """
         if self._agent is not None:
-            return self._chat_via_autogen(messages)
-        return self._chat_direct(messages, temperature)
+            response = self._chat_via_autogen(messages)
+            self._trace_interaction("autogen", messages, response)
+            return response
+        response = self._chat_direct(messages, temperature)
+        self._trace_interaction("direct", messages, response)
+        return response
+
+    def _trace_interaction(self, mode: str, messages: List[Dict], response: str) -> None:
+        """Persist agent prompts/responses for experiment reproducibility."""
+        if not AGENT_TRACE_ENABLED:
+            return
+        try:
+            trace_dir = Path(AGENT_TRACE_DIR)
+            trace_dir.mkdir(parents=True, exist_ok=True)
+            payload = {
+                "timestamp": datetime.now().isoformat(timespec="seconds"),
+                "role": self.role,
+                "mode": mode,
+                "model": LLM_MODEL,
+                "used_fallback": bool(response and response.startswith("__FALLBACK__")),
+                "messages": messages,
+                "response": response,
+            }
+            trace_path = trace_dir / f"{self.role}.jsonl"
+            with trace_path.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+        except Exception:
+            pass
 
     def _chat_via_autogen(self, messages: List[Dict]) -> str:
         """通过 AutoGen 调用 LLM"""

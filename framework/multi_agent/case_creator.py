@@ -99,6 +99,29 @@ class CaseCreator(BaseAgent):
 
     def _mock_cases(self, module: str) -> List[Dict]:
         """LLM 不可用时的降级测试用例"""
+        try:
+            from config import GROUND_TRUTH_FILE
+            with open(GROUND_TRUTH_FILE, "r", encoding="utf-8") as f:
+                ground_truth = json.load(f)
+            cases = [
+                {
+                    "test_id": item.get("test_id", ""),
+                    "module": item.get("module", module),
+                    "requirement": item.get("requirement", ""),
+                    "title": item.get("requirement", item.get("test_id", "")),
+                    "precondition": "见需求说明",
+                    "steps": item.get("steps", []),
+                    "expected": item.get("expected", ""),
+                    "type": item.get("type", "正向"),
+                }
+                for item in ground_truth
+                if item.get("module") == module
+            ]
+            if cases:
+                return cases
+        except Exception as e:
+            print(f"[CaseCreator] 读取 Ground Truth 降级用例失败: {e}")
+
         mock_db = {
             "login": [
                 {"test_id": "TC-LOGIN-001", "module": "login",

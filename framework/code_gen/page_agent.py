@@ -39,8 +39,8 @@ class PageAgent(BaseAgent):
         pages["login"] = {
             "class_name": "LoginPage",
             "elements": {
-                "username_input": "#username",
-                "password_input": "#password",
+                "username_input": "input[name='username']",
+                "password_input": "input[name='password']",
                 "login_button": "button[type='submit']",
                 "error_flash": ".flash.error",
                 "success_flash": ".flash.success",
@@ -54,6 +54,8 @@ class PageAgent(BaseAgent):
                            "self.page.wait_for_load_state(\"networkidle\")"]},
                 {"name": "get_error_message", "params": [],
                  "steps": ["return self.get_text(self.ERROR_FLASH)"]},
+                {"name": "get_success_message", "params": [],
+                 "steps": ["return self.get_text(self.SUCCESS_FLASH)"]},
             ]
         }
         pages["index"] = {
@@ -63,6 +65,7 @@ class PageAgent(BaseAgent):
                 "search_button": "button[type='submit']",
                 "category_select": "select[name='category']",
                 "cart_buttons": "form button:has-text('加入购物车')",
+                "product_cards": ".card",
                 "logout_link": "a:has-text('退出')",
             },
             "methods": [
@@ -71,8 +74,14 @@ class PageAgent(BaseAgent):
                            "self.page.fill(self.SEARCH_INPUT, keyword)",
                            "self.page.click(self.SEARCH_BUTTON)",
                            "self.page.wait_for_load_state(\"networkidle\")"]},
+                {"name": "filter_category", "params": ["category: str"],
+                 "steps": ["self.navigate(\"/\")",
+                           "self.page.select_option(self.CATEGORY_SELECT, category)",
+                           "self.page.click(self.SEARCH_BUTTON)",
+                           "self.page.wait_for_load_state(\"networkidle\")"]},
                 {"name": "add_to_cart", "params": ["product_id: str"],
-                 "steps": ["self.page.click(f\"form button[data-pid='{product_id}']\")",
+                 "steps": ["self.navigate(\"/\")",
+                           "self.page.click(f\"form:has(input[name='product_id'][value='{product_id}']) button[type='submit']\")",
                            "self.page.wait_for_load_state(\"networkidle\")"]},
             ]
         }
@@ -83,6 +92,7 @@ class PageAgent(BaseAgent):
                 "delete_buttons": "button:has-text('删除')",
                 "increase_buttons": "button:has-text('+')",
                 "decrease_buttons": "button:has-text('−')",
+                "empty_cart_text": "text=购物车是空的",
             },
             "methods": [
                 {"name": "go_to_cart", "params": [],

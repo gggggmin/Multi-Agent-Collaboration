@@ -140,6 +140,13 @@ class Coordinator:
         if ags_trainer is None:
             return False
 
+        blocking_errors = [
+            issue for issue in audit_result.get("issues", [])
+            if issue.get("severity") == "error"
+        ]
+        if blocking_errors:
+            return False
+
         has_hallucination = any(
             i.get("type") == "hallucination"
             for i in audit_result.get("issues", [])

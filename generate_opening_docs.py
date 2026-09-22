@@ -8,11 +8,11 @@ from docx.shared import Pt
 
 ROOT = Path(__file__).resolve().parent
 TEMPLATE_DOCX = ROOT / "2025级-伍伦贡联合研究院_研究生学位论文相关文件" / "王洋开题答辩文档（中文）.docx"
-OUT_DOCX = ROOT / "开题答辩文档_基于多智能体协同与强化学习的自动化测试生成框架研究.docx"
-OUT_OUTLINE = ROOT / "开题答辩PPT大纲_基于多智能体协同与强化学习的自动化测试生成框架研究.md"
+OUT_DOCX = ROOT / "开题答辩文档_基于多智能体协同的需求驱动自动化测试生成与自愈方法研究.docx"
+OUT_OUTLINE = ROOT / "开题答辩PPT大纲_基于多智能体协同的需求驱动自动化测试生成与自愈方法研究.md"
 
 
-TITLE = "基于多智能体协同与强化学习的自动化测试生成框架研究"
+TITLE = "基于多智能体协同的需求驱动自动化测试生成与自愈方法研究"
 
 
 def set_paragraph_text(paragraph, text, size=12, bold=False):

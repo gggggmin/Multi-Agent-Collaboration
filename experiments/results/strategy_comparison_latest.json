@@ -1,0 +1,370 @@
+{
+  "run_id": "20260922_153021",
+  "source_report": "D:\\测试智能体\\experiments\\results\\agent_pipeline_20260921_210235.json",
+  "stopping_strategy_comparison": {
+    "description": "Stopping strategy comparison over clean and noisy audit states.",
+    "summary": {
+      "fixed_1_round": {
+        "num_scenarios": 4,
+        "avg_iterations": 1.0,
+        "unsafe_accepts": 2,
+        "unsafe_accept_rate_pct": 50.0,
+        "missed_safe_accepts": 0,
+        "decisions": [
+          {
+            "scenario": "clean_passed_generation",
+            "accepted": true,
+            "action": null,
+            "iterations": 1,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "noisy_conflict_and_hallucination",
+            "accepted": true,
+            "action": null,
+            "iterations": 1,
+            "safe_to_accept": false,
+            "unsafe_accept": true,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "warning_only_incomplete_description",
+            "accepted": true,
+            "action": null,
+            "iterations": 1,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "hallucination_error",
+            "accepted": true,
+            "action": null,
+            "iterations": 1,
+            "safe_to_accept": false,
+            "unsafe_accept": true,
+            "missed_safe_accept": false
+          }
+        ]
+      },
+      "fixed_3_round": {
+        "num_scenarios": 4,
+        "avg_iterations": 3.0,
+        "unsafe_accepts": 2,
+        "unsafe_accept_rate_pct": 50.0,
+        "missed_safe_accepts": 0,
+        "decisions": [
+          {
+            "scenario": "clean_passed_generation",
+            "accepted": true,
+            "action": null,
+            "iterations": 3,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "noisy_conflict_and_hallucination",
+            "accepted": true,
+            "action": null,
+            "iterations": 3,
+            "safe_to_accept": false,
+            "unsafe_accept": true,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "warning_only_incomplete_description",
+            "accepted": true,
+            "action": null,
+            "iterations": 3,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "hallucination_error",
+            "accepted": true,
+            "action": null,
+            "iterations": 3,
+            "safe_to_accept": false,
+            "unsafe_accept": true,
+            "missed_safe_accept": false
+          }
+        ]
+      },
+      "fixed_5_round": {
+        "num_scenarios": 4,
+        "avg_iterations": 5.0,
+        "unsafe_accepts": 2,
+        "unsafe_accept_rate_pct": 50.0,
+        "missed_safe_accepts": 0,
+        "decisions": [
+          {
+            "scenario": "clean_passed_generation",
+            "accepted": true,
+            "action": null,
+            "iterations": 5,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "noisy_conflict_and_hallucination",
+            "accepted": true,
+            "action": null,
+            "iterations": 5,
+            "safe_to_accept": false,
+            "unsafe_accept": true,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "warning_only_incomplete_description",
+            "accepted": true,
+            "action": null,
+            "iterations": 5,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "hallucination_error",
+            "accepted": true,
+            "action": null,
+            "iterations": 5,
+            "safe_to_accept": false,
+            "unsafe_accept": true,
+            "missed_safe_accept": false
+          }
+        ]
+      },
+      "raw_ppo": {
+        "num_scenarios": 4,
+        "avg_iterations": 1.0,
+        "unsafe_accepts": 2,
+        "unsafe_accept_rate_pct": 50.0,
+        "missed_safe_accepts": 0,
+        "decisions": [
+          {
+            "scenario": "clean_passed_generation",
+            "accepted": true,
+            "action": 1,
+            "iterations": 1,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "noisy_conflict_and_hallucination",
+            "accepted": true,
+            "action": 1,
+            "iterations": 1,
+            "safe_to_accept": false,
+            "unsafe_accept": true,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "warning_only_incomplete_description",
+            "accepted": true,
+            "action": 1,
+            "iterations": 1,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "hallucination_error",
+            "accepted": true,
+            "action": 1,
+            "iterations": 1,
+            "safe_to_accept": false,
+            "unsafe_accept": true,
+            "missed_safe_accept": false
+          }
+        ]
+      },
+      "safety_gated_rl_ags": {
+        "num_scenarios": 4,
+        "avg_iterations": 1.0,
+        "unsafe_accepts": 0,
+        "unsafe_accept_rate_pct": 0.0,
+        "missed_safe_accepts": 0,
+        "decisions": [
+          {
+            "scenario": "clean_passed_generation",
+            "accepted": true,
+            "action": 1,
+            "iterations": 1,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "noisy_conflict_and_hallucination",
+            "accepted": false,
+            "action": 0,
+            "iterations": 1,
+            "safe_to_accept": false,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "warning_only_incomplete_description",
+            "accepted": true,
+            "action": 1,
+            "iterations": 1,
+            "safe_to_accept": true,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          },
+          {
+            "scenario": "hallucination_error",
+            "accepted": false,
+            "action": 0,
+            "iterations": 1,
+            "safe_to_accept": false,
+            "unsafe_accept": false,
+            "missed_safe_accept": false
+          }
+        ]
+      }
+    },
+    "scenarios": [
+      {
+        "name": "clean_passed_generation",
+        "coverage_estimate": 1.0,
+        "num_issues": 0,
+        "has_error": false,
+        "expected_safe_to_accept": true
+      },
+      {
+        "name": "noisy_conflict_and_hallucination",
+        "coverage_estimate": 0.35,
+        "num_issues": 12,
+        "has_error": true,
+        "expected_safe_to_accept": false
+      },
+      {
+        "name": "warning_only_incomplete_description",
+        "coverage_estimate": 0.85,
+        "num_issues": 1,
+        "has_error": false,
+        "expected_safe_to_accept": true
+      },
+      {
+        "name": "hallucination_error",
+        "coverage_estimate": 0.45,
+        "num_issues": 1,
+        "has_error": true,
+        "expected_safe_to_accept": false
+      }
+    ]
+  },
+  "prioritization_strategy_comparison": {
+    "description": "Prioritization comparison using top-20-percent high-risk capture.",
+    "history_source": "experiments/results/healing_demo.json identified TC-SEARCH-005 as a repaired locator failure.",
+    "summary": {
+      "original_order": {
+        "total_cases": 80,
+        "top_20_pct_count": 16,
+        "high_risk_total": 32,
+        "high_risk_in_top_20_pct": 11,
+        "high_risk_capture_pct": 34.38,
+        "boundary_total": 18,
+        "boundary_in_top_20_pct": 5,
+        "boundary_capture_pct": 27.78,
+        "historical_failure_total": 1,
+        "historical_failure_in_top_20_pct": 0,
+        "historical_failure_capture_pct": 0.0,
+        "top_10_ids": [
+          "TC-LOGIN-001",
+          "TC-LOGIN-002",
+          "TC-LOGIN-003",
+          "TC-LOGIN-004",
+          "TC-LOGIN-005",
+          "TC-LOGIN-006",
+          "TC-LOGIN-007",
+          "TC-LOGIN-008",
+          "TC-LOGIN-009",
+          "TC-LOGIN-010"
+        ]
+      },
+      "module_order": {
+        "total_cases": 80,
+        "top_20_pct_count": 16,
+        "high_risk_total": 32,
+        "high_risk_in_top_20_pct": 4,
+        "high_risk_capture_pct": 12.5,
+        "boundary_total": 18,
+        "boundary_in_top_20_pct": 3,
+        "boundary_capture_pct": 16.67,
+        "historical_failure_total": 1,
+        "historical_failure_in_top_20_pct": 0,
+        "historical_failure_capture_pct": 0.0,
+        "top_10_ids": [
+          "TC-CART-001",
+          "TC-CART-002",
+          "TC-CART-003",
+          "TC-CART-004",
+          "TC-CART-005",
+          "TC-CART-006",
+          "TC-CART-007",
+          "TC-CART-008",
+          "TC-CART-009",
+          "TC-CART-010"
+        ]
+      },
+      "risk_only": {
+        "total_cases": 80,
+        "top_20_pct_count": 16,
+        "high_risk_total": 32,
+        "high_risk_in_top_20_pct": 16,
+        "high_risk_capture_pct": 50.0,
+        "boundary_total": 18,
+        "boundary_in_top_20_pct": 16,
+        "boundary_capture_pct": 88.89,
+        "historical_failure_total": 1,
+        "historical_failure_in_top_20_pct": 0,
+        "historical_failure_capture_pct": 0.0,
+        "top_10_ids": [
+          "TC-CART-003",
+          "TC-CART-007",
+          "TC-CART-009",
+          "TC-CART-017",
+          "TC-CHECKOUT-003",
+          "TC-CHECKOUT-004",
+          "TC-CHECKOUT-009",
+          "TC-CHECKOUT-011",
+          "TC-CHECKOUT-016",
+          "TC-LOGIN-003"
+        ]
+      },
+      "rcp_tcp": {
+        "total_cases": 80,
+        "top_20_pct_count": 16,
+        "high_risk_total": 32,
+        "high_risk_in_top_20_pct": 15,
+        "high_risk_capture_pct": 46.88,
+        "boundary_total": 18,
+        "boundary_in_top_20_pct": 15,
+        "boundary_capture_pct": 83.33,
+        "historical_failure_total": 1,
+        "historical_failure_in_top_20_pct": 1,
+        "historical_failure_capture_pct": 100.0,
+        "top_10_ids": [
+          "TC-SEARCH-005",
+          "TC-CART-003",
+          "TC-CART-007",
+          "TC-CART-009",
+          "TC-CART-017",
+          "TC-LOGIN-003",
+          "TC-LOGIN-004",
+          "TC-LOGIN-005",
+          "TC-LOGIN-008",
+          "TC-LOGIN-011"
+        ]
+      }
+    }
+  }
+}

@@ -97,7 +97,7 @@ def build_doc():
 
     sub = doc.add_paragraph()
     sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = sub.add_run("论文题目：基于多智能体协同与强化学习的自动化测试生成框架研究")
+    run = sub.add_run("论文题目：基于多智能体协同的需求驱动自动化测试生成与自愈方法研究")
     set_run_font(run, size=12)
 
     add_heading(doc, "一、论文总定位", 1)
@@ -105,7 +105,7 @@ def build_doc():
     add_para(doc, "核心主线不是“我用了大模型生成测试”，而是：用多智能体解决 LLM 测试生成不稳定和幻觉问题，用强化学习解决多轮生成过程中的动态决策问题。")
 
     add_heading(doc, "二、推荐论文题目", 1)
-    add_para(doc, "基于多智能体协同与强化学习的自动化测试生成框架研究")
+    add_para(doc, "基于多智能体协同的需求驱动自动化测试生成与自愈方法研究")
 
     add_heading(doc, "三、章节详细大纲", 1)
 

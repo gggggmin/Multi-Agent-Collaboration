@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""基于多智能体协同与强化学习的自动化测试生成框架 — 主入口"""
+"""基于多智能体协同的需求驱动自动化测试生成与自愈方法研究 — 主入口"""
 import sys
 import argparse
 from pathlib import Path
@@ -117,11 +117,19 @@ def cmd_heal(args):
         if args.fix:
             script_content = Path(args.script).read_text(encoding="utf-8")
             heal_result = healer.heal(script_content, diagnosis)
-            if heal_result["success"]:
+            if heal_result.get("fixed_code"):
                 fix_path = args.script.replace(".py", "_fixed.py")
                 Path(fix_path).write_text(heal_result["fixed_code"], encoding="utf-8")
+                verify_result = executor.run_script(fix_path)
+                heal_result["success"] = verify_result.get("success", False)
+                healer.record_strategy_result(
+                    heal_result.get("strategy", "unknown"),
+                    heal_result.get("error_category", "unknown"),
+                    heal_result["success"],
+                )
                 print(f"修复完成，策略: {heal_result.get('strategy', 'unknown')}")
                 print(f"保存至: {fix_path}")
+                print(f"二次验证: {'通过' if verify_result.get('success') else '失败'}")
             else:
                 print("修复失败，所有策略均无效")
 
@@ -185,10 +193,14 @@ def cmd_experiment(args):
         from experiments.run_experiments import experiment_rl_comparison
         experiment_rl_comparison()
 
+    if args.type in ("healing", "all"):
+        from experiments.run_experiments import experiment_healing_demo
+        experiment_healing_demo()
+
 
 def main():
     parser = argparse.ArgumentParser(
-        description="基于多智能体协同与强化学习的自动化测试生成框架")
+        description="基于多智能体协同的需求驱动自动化测试生成与自愈方法研究")
     subparsers = parser.add_subparsers(dest="command", help="子命令")
 
     # RAG
@@ -227,9 +239,9 @@ def main():
     # 实验
     p_exp = subparsers.add_parser("experiment", help="运行实验")
     p_exp.add_argument("--type",
-                       choices=["full", "ablation", "rl", "all"],
+                       choices=["full", "ablation", "rl", "healing", "all"],
                        default="all",
-                       help="实验类型 (full=完整, ablation=消融, rl=RL对比, all=全部)")
+                       help="实验类型 (full=完整, ablation=消融, rl=RL对比, healing=自愈, all=全部)")
 
     args = parser.parse_args()
 
@@ -238,7 +250,7 @@ def main():
         "generate": cmd_generate,
         "codegen": cmd_codegen,
         "heal": cmd_heal,
-        "pipeline": cmd_pipeline,
+        "pipeline": cmd_pipeline,
         "train-rl": cmd_train_rl,
         "experiment": cmd_experiment,
     }

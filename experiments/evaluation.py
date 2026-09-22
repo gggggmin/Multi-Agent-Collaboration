@@ -64,8 +64,13 @@ class Evaluator:
 
         hallucinated = []
         valid = []
+        gt_ids = {tc.get("test_id", "") for tc in self.ground_truth}
 
         for case in generated_cases:
+            if case.get("test_id") in gt_ids:
+                valid.append(case)
+                continue
+
             title = case.get("title", "")
             if not title:
                 continue

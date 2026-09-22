@@ -16,7 +16,9 @@ dist/
 build/
 
 output/
+output*/
 experiments/results/
+!experiments/results/.gitkeep
 *.log
 *.tmp
 
@@ -26,4 +28,3 @@ experiments/results/
 *.pptx
 *.pdf
 ~$*
-

@@ -1,28 +1,913 @@
 [
-  {"test_id": "TC-LOGIN-001", "module": "login", "requirement": "用户登录（正向）", "steps": ["访问登录页", "输入用户名 testuser", "输入密码 password123", "点击登录"], "expected": "登录成功，跳转首页，右上角显示用户昵称", "type": "正向"},
-  {"test_id": "TC-LOGIN-002", "module": "login", "requirement": "登录失败-错误密码", "steps": ["访问登录页", "输入用户名 testuser", "输入密码 wrongpassword", "点击登录"], "expected": "提示'用户名或密码错误'，停留在登录页", "type": "逆向"},
-  {"test_id": "TC-LOGIN-003", "module": "login", "requirement": "登录失败-空用户名", "steps": ["访问登录页", "不输入用户名", "输入任意密码", "点击登录"], "expected": "提示'用户名和密码不能为空'，停留在登录页", "type": "边界值"},
-  {"test_id": "TC-LOGIN-004", "module": "login", "requirement": "登录失败-空密码", "steps": ["访问登录页", "输入任意用户名", "不输入密码", "点击登录"], "expected": "提示'用户名和密码不能为空'，停留在登录页", "type": "边界值"},
-  {"test_id": "TC-LOGIN-005", "module": "login", "requirement": "登录失败-不存在的用户", "steps": ["访问登录页", "输入不存在的用户名", "输入任意密码", "点击登录"], "expected": "提示'用户名或密码错误'，停留在登录页", "type": "逆向"},
-  {"test_id": "TC-LOGIN-006", "module": "login", "requirement": "登出", "steps": ["登录", "点击退出链接"], "expected": "跳转首页，提示'已安全退出'，显示登录按钮", "type": "正向"},
-  {"test_id": "TC-LOGIN-007", "module": "login", "requirement": "未登录访问结算页", "steps": ["未登录状态", "直接访问 /checkout"], "expected": "跳转登录页，提示'请先登录后再下单'", "type": "逆向"},
-  {"test_id": "TC-LOGIN-008", "module": "login", "requirement": "登录后保持会话", "steps": ["登录", "访问首页", "访问购物车", "访问结算页"], "expected": "所有页面保持登录状态，显示用户昵称", "type": "正向"},
-  {"test_id": "TC-SEARCH-001", "module": "search", "requirement": "按关键词搜索（正向）", "steps": ["首页搜索框输入'华为'", "点击搜索"], "expected": "页面显示华为MateBook X Pro", "type": "正向"},
-  {"test_id": "TC-SEARCH-002", "module": "search", "requirement": "按关键词搜索-无结果", "steps": ["首页搜索框输入'不存在的商品xyz'", "点击搜索"], "expected": "显示'没有找到匹配的商品'", "type": "逆向"},
-  {"test_id": "TC-SEARCH-003", "module": "search", "requirement": "按分类筛选-手机", "steps": ["首页分类选择'手机'", "点击搜索"], "expected": "只显示手机类商品（iPhone/Samsung/小米）", "type": "正向"},
-  {"test_id": "TC-SEARCH-004", "module": "search", "requirement": "按分类筛选-笔记本", "steps": ["首页分类选择'笔记本'", "点击搜索"], "expected": "只显示笔记本类商品（MateBook/MacBook/ThinkPad）", "type": "正向"},
-  {"test_id": "TC-SEARCH-005", "module": "search", "requirement": "关键词+分类组合搜索", "steps": ["搜索框输入'Apple'", "分类选择'笔记本'", "点击搜索"], "expected": "显示Apple品牌的笔记本（MacBook Air M3）", "type": "正向"},
-  {"test_id": "TC-SEARCH-006", "module": "search", "requirement": "空关键词搜索", "steps": ["搜索框为空", "分类选择'全部'", "点击搜索"], "expected": "显示所有商品", "type": "边界值"},
-  {"test_id": "TC-SEARCH-007", "module": "search", "requirement": "搜索无货商品", "steps": ["搜索框输入'ThinkPad'", "点击搜索"], "expected": "显示ThinkPad X1 Carbon，标注'无货'", "type": "正向"},
-  {"test_id": "TC-CART-001", "module": "cart", "requirement": "添加商品到购物车（正向）", "steps": ["首页", "点击商品的'加入购物车'按钮"], "expected": "提示'已将商品加入购物车'", "type": "正向"},
-  {"test_id": "TC-CART-002", "module": "cart", "requirement": "添加无货商品到购物车", "steps": ["首页", "找到无货商品（AirPods Pro 3）", "尝试点击'加入购物车'"], "expected": "按钮被禁用或提示'库存不足'", "type": "逆向"},
-  {"test_id": "TC-CART-003", "module": "cart", "requirement": "增加购物车商品数量", "steps": ["购物车页面", "点击商品旁的'+'按钮"], "expected": "商品数量增加，小计更新", "type": "正向"},
-  {"test_id": "TC-CART-004", "module": "cart", "requirement": "减少购物车商品数量", "steps": ["购物车页面（数量>1）", "点击'-'按钮"], "expected": "商品数量减少，小计更新", "type": "正向"},
-  {"test_id": "TC-CART-005", "module": "cart", "requirement": "删除购物车商品", "steps": ["购物车页面", "点击商品旁的'删除'按钮"], "expected": "商品移除，提示'已从购物车移除'", "type": "正向"},
-  {"test_id": "TC-CART-006", "module": "cart", "requirement": "空购物车页面", "steps": ["购物车为空", "访问购物车"], "expected": "显示'购物车是空的'和'去逛逛'按钮", "type": "边界值"},
-  {"test_id": "TC-CHECKOUT-001", "module": "checkout", "requirement": "正常下单结算（正向）", "steps": ["购物车有商品", "点击'去结算'", "填写收货地址", "选择支付方式", "点击'提交订单'"], "expected": "订单提交成功，显示订单号和商品清单", "type": "正向"},
-  {"test_id": "TC-CHECKOUT-002", "module": "checkout", "requirement": "空购物车结算", "steps": ["用户已登录", "购物车为空", "访问 /checkout"], "expected": "跳转购物车页，提示'购物车为空，请先添加商品'", "type": "边界值"},
-  {"test_id": "TC-CHECKOUT-003", "module": "checkout", "requirement": "结算时不填写收货地址", "steps": ["登录", "购物车有商品", "访问结算页", "不填写地址", "提交订单"], "expected": "提示'请填写收货地址'，停留结算页", "type": "边界值"},
-  {"test_id": "TC-CHECKOUT-004", "module": "checkout", "requirement": "查看订单详情", "steps": ["登录", "提交订单成功", "查看订单详情页"], "expected": "显示订单号/商品清单/地址/支付方式/状态/时间", "type": "正向"},
-  {"test_id": "TC-CHECKOUT-005", "module": "checkout", "requirement": "未登录查看订单", "steps": ["未登录", "访问 /order/<id>"], "expected": "跳转登录页，提示'请先登录'", "type": "逆向"}
+  {
+    "test_id": "TC-LOGIN-001",
+    "module": "login",
+    "requirement": "用户登录（正向）",
+    "steps": [
+      "访问登录页",
+      "输入用户名 testuser",
+      "输入密码 password123",
+      "点击登录"
+    ],
+    "expected": "登录成功，跳转首页，右上角显示用户昵称",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-LOGIN-002",
+    "module": "login",
+    "requirement": "登录失败-错误密码",
+    "steps": [
+      "访问登录页",
+      "输入用户名 testuser",
+      "输入密码 wrongpassword",
+      "点击登录"
+    ],
+    "expected": "提示'用户名或密码错误'，停留在登录页",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-LOGIN-003",
+    "module": "login",
+    "requirement": "登录失败-空用户名",
+    "steps": [
+      "访问登录页",
+      "不输入用户名",
+      "输入任意密码",
+      "点击登录"
+    ],
+    "expected": "提示'用户名和密码不能为空'，停留在登录页",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-LOGIN-004",
+    "module": "login",
+    "requirement": "登录失败-空密码",
+    "steps": [
+      "访问登录页",
+      "输入任意用户名",
+      "不输入密码",
+      "点击登录"
+    ],
+    "expected": "提示'用户名和密码不能为空'，停留在登录页",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-LOGIN-005",
+    "module": "login",
+    "requirement": "登录失败-空用户名和空密码",
+    "steps": [
+      "访问登录页",
+      "不输入用户名",
+      "不输入密码",
+      "点击登录"
+    ],
+    "expected": "提示'用户名和密码不能为空'，停留在登录页",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-LOGIN-006",
+    "module": "login",
+    "requirement": "登录失败-不存在的用户",
+    "steps": [
+      "访问登录页",
+      "输入不存在的用户名",
+      "输入任意密码",
+      "点击登录"
+    ],
+    "expected": "提示'用户名或密码错误'，停留在登录页",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-LOGIN-007",
+    "module": "login",
+    "requirement": "登出",
+    "steps": [
+      "登录",
+      "点击退出链接"
+    ],
+    "expected": "跳转首页，提示'已安全退出'，显示登录按钮",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-LOGIN-008",
+    "module": "login",
+    "requirement": "未登录访问购物车",
+    "steps": [
+      "未登录状态",
+      "直接访问 /cart"
+    ],
+    "expected": "可以访问购物车页面，购物车为空",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-LOGIN-009",
+    "module": "login",
+    "requirement": "未登录访问结算页",
+    "steps": [
+      "未登录状态",
+      "直接访问 /checkout"
+    ],
+    "expected": "跳转登录页，提示'请先登录后再下单'",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-LOGIN-010",
+    "module": "login",
+    "requirement": "登录后保持会话",
+    "steps": [
+      "登录",
+      "访问首页",
+      "访问购物车",
+      "访问结算页"
+    ],
+    "expected": "所有页面保持登录状态，显示用户昵称",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-LOGIN-011",
+    "module": "login",
+    "requirement": "已登录用户重复登录",
+    "steps": [
+      "登录",
+      "访问 /login 页面"
+    ],
+    "expected": "显示登录页面",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-SEARCH-001",
+    "module": "search",
+    "requirement": "按关键词搜索（正向）",
+    "steps": [
+      "首页搜索框输入'华为'",
+      "点击搜索"
+    ],
+    "expected": "页面显示华为MateBook X Pro",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-002",
+    "module": "search",
+    "requirement": "按关键词搜索-无结果",
+    "steps": [
+      "首页搜索框输入'不存在的商品xyz'",
+      "点击搜索"
+    ],
+    "expected": "显示'没有找到匹配的商品'",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-SEARCH-003",
+    "module": "search",
+    "requirement": "按分类筛选-手机",
+    "steps": [
+      "首页分类选择'手机'",
+      "点击搜索"
+    ],
+    "expected": "只显示手机类商品（iPhone/Samsung/小米）",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-004",
+    "module": "search",
+    "requirement": "按分类筛选-笔记本",
+    "steps": [
+      "首页分类选择'笔记本'",
+      "点击搜索"
+    ],
+    "expected": "只显示笔记本类商品（MateBook/MacBook/ThinkPad）",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-005",
+    "module": "search",
+    "requirement": "关键词+分类组合搜索",
+    "steps": [
+      "搜索框输入'Apple'",
+      "分类选择'笔记本'",
+      "点击搜索"
+    ],
+    "expected": "显示Apple品牌的笔记本（MacBook Air M3）",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-006",
+    "module": "search",
+    "requirement": "空关键词搜索",
+    "steps": [
+      "搜索框为空",
+      "分类选择'全部'",
+      "点击搜索"
+    ],
+    "expected": "显示所有商品",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-SEARCH-007",
+    "module": "search",
+    "requirement": "搜索无货商品",
+    "steps": [
+      "搜索框输入'ThinkPad'",
+      "点击搜索"
+    ],
+    "expected": "显示ThinkPad X1 Carbon，标注'无货'",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-008",
+    "module": "search",
+    "requirement": "分类筛选-耳机（含无货商品）",
+    "steps": [
+      "首页分类选择'耳机'",
+      "点击搜索"
+    ],
+    "expected": "显示耳机类商品（Sony WH-1000XM6有货，AirPods Pro 3无货）",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-009",
+    "module": "search",
+    "requirement": "搜索空字符串",
+    "steps": [
+      "搜索框输入空格",
+      "点击搜索"
+    ],
+    "expected": "显示所有商品",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-CART-001",
+    "module": "cart",
+    "requirement": "添加商品到购物车（正向）",
+    "steps": [
+      "首页",
+      "点击商品的'加入购物车'按钮"
+    ],
+    "expected": "提示'已将商品加入购物车'",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-002",
+    "module": "cart",
+    "requirement": "添加无货商品到购物车",
+    "steps": [
+      "首页",
+      "找到无货商品（AirPods Pro 3）",
+      "尝试点击'加入购物车'"
+    ],
+    "expected": "按钮被禁用或提示'库存不足'",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-CART-003",
+    "module": "cart",
+    "requirement": "添加商品超过库存",
+    "steps": [
+      "反复点击加入购物车超过库存数量"
+    ],
+    "expected": "达到库存上限后提示'库存不足'",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-CART-004",
+    "module": "cart",
+    "requirement": "查看购物车",
+    "steps": [
+      "购物车有商品",
+      "访问购物车"
+    ],
+    "expected": "显示商品、数量、单价和小计",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-005",
+    "module": "cart",
+    "requirement": "增加购物车商品数量",
+    "steps": [
+      "购物车页面",
+      "点击商品旁的'+'按钮"
+    ],
+    "expected": "商品数量增加，小计更新",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-006",
+    "module": "cart",
+    "requirement": "减少购物车商品数量",
+    "steps": [
+      "购物车页面（数量>1）",
+      "点击'-'按钮"
+    ],
+    "expected": "商品数量减少，小计更新",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-007",
+    "module": "cart",
+    "requirement": "减少商品数量至0（删除）",
+    "steps": [
+      "购物车页面（数量=1）",
+      "点击'-'按钮"
+    ],
+    "expected": "商品从购物车中移除",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-CART-008",
+    "module": "cart",
+    "requirement": "删除购物车商品",
+    "steps": [
+      "购物车页面",
+      "点击商品旁的'删除'按钮"
+    ],
+    "expected": "商品移除，提示'已从购物车移除'",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-009",
+    "module": "cart",
+    "requirement": "空购物车页面",
+    "steps": [
+      "购物车为空",
+      "访问购物车"
+    ],
+    "expected": "显示'购物车是空的'和'去逛逛'按钮",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-CHECKOUT-001",
+    "module": "checkout",
+    "requirement": "正常下单结算（正向）",
+    "steps": [
+      "购物车有商品",
+      "点击'去结算'",
+      "填写收货地址",
+      "选择支付方式",
+      "点击'提交订单'"
+    ],
+    "expected": "订单提交成功，显示订单号和商品清单",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-002",
+    "module": "checkout",
+    "requirement": "未登录访问结算页",
+    "steps": [
+      "未登录状态",
+      "直接访问 /checkout"
+    ],
+    "expected": "跳转登录页，提示'请先登录后再下单'",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-003",
+    "module": "checkout",
+    "requirement": "空购物车结算",
+    "steps": [
+      "用户已登录",
+      "购物车为空",
+      "访问 /checkout"
+    ],
+    "expected": "跳转购物车页，提示'购物车为空，请先添加商品'",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-CHECKOUT-004",
+    "module": "checkout",
+    "requirement": "结算时不填写收货地址",
+    "steps": [
+      "登录",
+      "购物车有商品",
+      "访问结算页",
+      "不填写地址",
+      "提交订单"
+    ],
+    "expected": "提示'请填写收货地址'，停留结算页",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-CHECKOUT-005",
+    "module": "checkout",
+    "requirement": "选择不同支付方式",
+    "steps": [
+      "结算页",
+      "填写地址",
+      "选择微信支付/支付宝/银行卡",
+      "提交订单"
+    ],
+    "expected": "每种支付方式均可成功提交订单",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-006",
+    "module": "checkout",
+    "requirement": "查看订单详情",
+    "steps": [
+      "登录",
+      "提交订单成功",
+      "查看订单详情页"
+    ],
+    "expected": "显示订单号/商品清单/地址/支付方式/状态/时间",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-007",
+    "module": "checkout",
+    "requirement": "未登录查看订单",
+    "steps": [
+      "未登录",
+      "访问 /order/<id>"
+    ],
+    "expected": "跳转登录页，提示'请先登录'",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-008",
+    "module": "checkout",
+    "requirement": "登录后商品库存扣减",
+    "steps": [
+      "登录",
+      "正常下单",
+      "查看首页对应商品库存"
+    ],
+    "expected": "下单成功后，对应商品库存减少",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-009",
+    "module": "checkout",
+    "requirement": "多次下单同一商品（库存耗尽）",
+    "steps": [
+      "将某商品全部加入购物车",
+      "下单",
+      "再次尝试加入同商品"
+    ],
+    "expected": "第一次下单成功，第二次提示'库存不足'",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-CHECKOUT-010",
+    "module": "checkout",
+    "requirement": "未登录访问订单详情（不存在订单）",
+    "steps": [
+      "未登录",
+      "访问 /order/nonexistent"
+    ],
+    "expected": "跳转登录页，提示'请先登录'",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-011",
+    "module": "checkout",
+    "requirement": "结算时商品刚好有货",
+    "steps": [
+      "将库存全部加入购物车",
+      "提交订单"
+    ],
+    "expected": "订单提交成功，扣减后库存为0",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-LOGIN-012",
+    "module": "login",
+    "requirement": "管理员账号登录",
+    "steps": [
+      "访问登录页",
+      "输入用户名 admin",
+      "输入密码 admin123",
+      "点击登录"
+    ],
+    "expected": "登录成功，跳转首页，显示管理员用户名",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-LOGIN-013",
+    "module": "login",
+    "requirement": "密码大小写错误",
+    "steps": [
+      "访问登录页",
+      "输入用户名 testuser",
+      "输入大小写不匹配的密码",
+      "点击登录"
+    ],
+    "expected": "提示'用户名或密码错误'，停留在登录页",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-LOGIN-014",
+    "module": "login",
+    "requirement": "用户名大小写错误",
+    "steps": [
+      "访问登录页",
+      "输入大小写不匹配的用户名",
+      "输入正确密码",
+      "点击登录"
+    ],
+    "expected": "提示'用户名或密码错误'，停留在登录页",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-LOGIN-015",
+    "module": "login",
+    "requirement": "登录页初始展示",
+    "steps": [
+      "访问 /login 页面"
+    ],
+    "expected": "显示用户名输入框、密码输入框和登录按钮",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-LOGIN-016",
+    "module": "login",
+    "requirement": "登出后访问结算页",
+    "steps": [
+      "登录",
+      "点击退出",
+      "直接访问 /checkout"
+    ],
+    "expected": "跳转登录页，提示'请先登录后再下单'",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-SEARCH-010",
+    "module": "search",
+    "requirement": "搜索Apple关键词",
+    "steps": [
+      "首页搜索框输入'Apple'",
+      "点击搜索"
+    ],
+    "expected": "显示 Apple MacBook Air M3",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-011",
+    "module": "search",
+    "requirement": "搜索小米关键词",
+    "steps": [
+      "首页搜索框输入'小米'",
+      "点击搜索"
+    ],
+    "expected": "显示小米14 Ultra",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-012",
+    "module": "search",
+    "requirement": "搜索Samsung关键词",
+    "steps": [
+      "首页搜索框输入'Samsung'",
+      "点击搜索"
+    ],
+    "expected": "显示 Samsung Galaxy S25",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-013",
+    "module": "search",
+    "requirement": "关键词大小写不敏感搜索",
+    "steps": [
+      "首页搜索框输入'iphone'",
+      "点击搜索"
+    ],
+    "expected": "显示 iPhone 16 Pro",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-014",
+    "module": "search",
+    "requirement": "手机分类排除笔记本",
+    "steps": [
+      "分类选择'手机'",
+      "点击搜索"
+    ],
+    "expected": "显示手机商品，不显示华为MateBook X Pro",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-010",
+    "module": "cart",
+    "requirement": "添加多种商品到购物车",
+    "steps": [
+      "添加华为MateBook",
+      "添加iPhone"
+    ],
+    "expected": "购物车中同时显示两种商品",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-011",
+    "module": "cart",
+    "requirement": "连续增加商品数量到3",
+    "steps": [
+      "购物车中有商品",
+      "连续点击两次'+'按钮"
+    ],
+    "expected": "商品数量变为3，小计同步更新",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-012",
+    "module": "cart",
+    "requirement": "减少数量后仍保留商品",
+    "steps": [
+      "购物车中商品数量为2",
+      "点击一次'-'按钮"
+    ],
+    "expected": "商品数量变为1，商品仍在购物车中",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-013",
+    "module": "cart",
+    "requirement": "多商品购物车删除单个商品",
+    "steps": [
+      "购物车中有两种商品",
+      "删除其中一种商品"
+    ],
+    "expected": "被删除商品消失，另一种商品仍保留",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-014",
+    "module": "cart",
+    "requirement": "购物车合计金额展示",
+    "steps": [
+      "购物车中有商品",
+      "访问购物车"
+    ],
+    "expected": "页面展示合计金额",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-012",
+    "module": "checkout",
+    "requirement": "银行卡支付下单",
+    "steps": [
+      "填写地址",
+      "选择银行卡",
+      "提交订单"
+    ],
+    "expected": "订单提交成功，订单详情显示银行卡",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-013",
+    "module": "checkout",
+    "requirement": "已登录访问不存在订单",
+    "steps": [
+      "登录",
+      "访问 /order/non-existent-order"
+    ],
+    "expected": "跳转首页，提示'订单不存在'",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-014",
+    "module": "checkout",
+    "requirement": "提交订单后购物车清空",
+    "steps": [
+      "正常提交订单",
+      "再访问购物车"
+    ],
+    "expected": "购物车为空",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-015",
+    "module": "checkout",
+    "requirement": "结算页展示商品清单",
+    "steps": [
+      "进入结算页"
+    ],
+    "expected": "显示商品名称、数量和总价",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-016",
+    "module": "checkout",
+    "requirement": "地址前后空格处理",
+    "steps": [
+      "地址输入前后带空格的文本",
+      "提交订单"
+    ],
+    "expected": "订单提交成功，地址按有效内容展示",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-LOGIN-017",
+    "module": "login",
+    "requirement": "admin错误密码登录",
+    "steps": [
+      "访问登录页",
+      "输入用户名 admin",
+      "输入错误密码",
+      "点击登录"
+    ],
+    "expected": "提示'用户名或密码错误'，停留在登录页",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-LOGIN-018",
+    "module": "login",
+    "requirement": "登录后首页显示用户名",
+    "steps": [
+      "登录成功后访问首页"
+    ],
+    "expected": "首页导航区域显示 testuser",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-LOGIN-019",
+    "module": "login",
+    "requirement": "登录失败后仍可重新登录",
+    "steps": [
+      "先输入错误密码登录失败",
+      "再输入正确密码登录"
+    ],
+    "expected": "第二次登录成功，跳转首页",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-LOGIN-020",
+    "module": "login",
+    "requirement": "登出后首页不显示用户名",
+    "steps": [
+      "点击退出后返回首页"
+    ],
+    "expected": "首页不再显示 testuser，显示登录入口",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-LOGIN-021",
+    "module": "login",
+    "requirement": "登录表单必填字段",
+    "steps": [
+      "访问登录页"
+    ],
+    "expected": "用户名和密码输入框均具备必填约束",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-SEARCH-015",
+    "module": "search",
+    "requirement": "搜索Sony关键词",
+    "steps": [
+      "首页搜索框输入'Sony'",
+      "点击搜索"
+    ],
+    "expected": "显示 Sony WH-1000XM6",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-016",
+    "module": "search",
+    "requirement": "搜索AirPods关键词",
+    "steps": [
+      "首页搜索框输入'AirPods'",
+      "点击搜索"
+    ],
+    "expected": "显示 AirPods Pro 3，并标注无货",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-017",
+    "module": "search",
+    "requirement": "关键词与分类不匹配",
+    "steps": [
+      "搜索框输入'Apple'",
+      "分类选择'手机'",
+      "点击搜索"
+    ],
+    "expected": "显示'没有找到匹配的商品'",
+    "type": "逆向"
+  },
+  {
+    "test_id": "TC-SEARCH-018",
+    "module": "search",
+    "requirement": "搜索结果保留关键词",
+    "steps": [
+      "搜索框输入'华为'",
+      "点击搜索"
+    ],
+    "expected": "搜索框中保留'华为'",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-SEARCH-019",
+    "module": "search",
+    "requirement": "全部分类显示所有商品",
+    "steps": [
+      "分类选择'全部'",
+      "点击搜索"
+    ],
+    "expected": "显示全部 8 个商品",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-CART-015",
+    "module": "cart",
+    "requirement": "购物车商品单价展示",
+    "steps": [
+      "购物车中有商品",
+      "访问购物车页面"
+    ],
+    "expected": "展示商品单价",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-016",
+    "module": "cart",
+    "requirement": "购物车数量展示",
+    "steps": [
+      "购物车中有商品",
+      "访问购物车页面"
+    ],
+    "expected": "展示商品数量",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-017",
+    "module": "cart",
+    "requirement": "空购物车去逛逛入口",
+    "steps": [
+      "购物车为空",
+      "访问购物车页面"
+    ],
+    "expected": "显示'去逛逛'按钮",
+    "type": "边界值"
+  },
+  {
+    "test_id": "TC-CART-018",
+    "module": "cart",
+    "requirement": "添加手机商品到购物车",
+    "steps": [
+      "添加 iPhone 16 Pro 到购物车"
+    ],
+    "expected": "购物车显示 iPhone 16 Pro",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CART-019",
+    "module": "cart",
+    "requirement": "添加耳机商品到购物车",
+    "steps": [
+      "添加 Sony WH-1000XM6 到购物车"
+    ],
+    "expected": "购物车显示 Sony WH-1000XM6",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-017",
+    "module": "checkout",
+    "requirement": "支付宝支付下单",
+    "steps": [
+      "填写地址",
+      "选择支付宝",
+      "提交订单"
+    ],
+    "expected": "订单提交成功，订单详情显示支付宝",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-018",
+    "module": "checkout",
+    "requirement": "微信支付下单",
+    "steps": [
+      "填写地址",
+      "选择微信支付",
+      "提交订单"
+    ],
+    "expected": "订单提交成功，订单详情显示微信支付",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-019",
+    "module": "checkout",
+    "requirement": "订单详情显示订单状态",
+    "steps": [
+      "访问订单详情页"
+    ],
+    "expected": "显示订单状态 pending",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-020",
+    "module": "checkout",
+    "requirement": "订单详情显示下单时间",
+    "steps": [
+      "访问订单详情页"
+    ],
+    "expected": "显示下单时间",
+    "type": "正向"
+  },
+  {
+    "test_id": "TC-CHECKOUT-021",
+    "module": "checkout",
+    "requirement": "订单详情显示总价",
+    "steps": [
+      "访问订单详情页"
+    ],
+    "expected": "显示订单总价",
+    "type": "正向"
+  }
 ]

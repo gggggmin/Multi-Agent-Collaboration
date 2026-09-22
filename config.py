@@ -20,6 +20,7 @@ LLM_BASE_URL_MAP = {
 }
 
 # ========== Embedding 配置 ==========
+EMBEDDING_BACKEND = os.getenv("EMBEDDING_BACKEND", "tfidf")  # tfidf / sentence-transformers
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 EMBEDDING_CACHE_DIR = str(ROOT_DIR / ".cache" / "embeddings")
 
@@ -39,6 +40,8 @@ EXPERIMENTS_DIR = ROOT_DIR / "experiments"
 REQUIREMENTS_DIR = EXPERIMENTS_DIR / "requirements"
 RESULTS_DIR = EXPERIMENTS_DIR / "results"
 GROUND_TRUTH_FILE = EXPERIMENTS_DIR / "ground_truth.json"
+AGENT_TRACE_ENABLED = os.getenv("AGENT_TRACE_ENABLED", "1") == "1"
+AGENT_TRACE_DIR = os.getenv("AGENT_TRACE_DIR", str(RESULTS_DIR / "agent_traces"))
 
 # ========== 被测系统配置 ==========
 TARGET_APP_URL = "http://localhost:5000"
