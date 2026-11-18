@@ -8,12 +8,23 @@
 from .ags_environment import AGSEnvironment
 from .ags_trainer import AGSTrainer
 from .hss_bandit import HSSBandit
+from .contextual_healing_bandit import (
+    ContextualHealingBandit,
+    HealingContextEncoder,
+    cost_sensitive_healing_reward,
+)
+from .safe_generation_env import GenerationAction, SafeGenerationEnv
 from .test_prioritizer import PrioritizationWeights, TestCasePrioritizer
 
 __all__ = [
     "AGSEnvironment",
     "AGSTrainer",
     "HSSBandit",
+    "ContextualHealingBandit",
+    "HealingContextEncoder",
+    "cost_sensitive_healing_reward",
+    "GenerationAction",
+    "SafeGenerationEnv",
     "PrioritizationWeights",
     "TestCasePrioritizer",
 ]

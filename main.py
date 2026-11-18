@@ -215,7 +215,12 @@ def main():
 
     # 代码生成
     p_code = subparsers.add_parser("codegen", help="生成测试脚本")
-    p_code.add_argument("--output", "-o", default="output", help="输出目录")
+    p_code.add_argument(
+        "--output",
+        "-o",
+        default="artifacts/generated/output",
+        help="输出目录",
+    )
 
     # 自愈
     p_heal = subparsers.add_parser("heal", help="执行自愈")
@@ -226,7 +231,12 @@ def main():
     # 智能体流水线
     p_pipeline = subparsers.add_parser("pipeline", help="运行完整智能体流水线")
     p_pipeline.add_argument("--module", "-m", action="append", help="模块名，可重复传入")
-    p_pipeline.add_argument("--output", "-o", default="output", help="输出目录")
+    p_pipeline.add_argument(
+        "--output",
+        "-o",
+        default="artifacts/generated/output",
+        help="输出目录",
+    )
     p_pipeline.add_argument("--no-rl", action="store_true", help="禁用 RL-AGS")
     p_pipeline.add_argument("--execute", action="store_true", help="执行生成的测试脚本")
     p_pipeline.add_argument("--heal", action="store_true", help="对失败脚本启用自愈")
@@ -250,7 +260,7 @@ def main():
         "generate": cmd_generate,
         "codegen": cmd_codegen,
         "heal": cmd_heal,
-        "pipeline": cmd_pipeline,
+        "pipeline": cmd_pipeline,
         "train-rl": cmd_train_rl,
         "experiment": cmd_experiment,
     }

@@ -70,6 +70,7 @@ class AGSTrainer:
             batch_size=train_cfg.get("batch_size", 64),
             verbose=1,
             tensorboard_log=tb_dir,
+            device="cpu",
         )
 
         # 评估回调
@@ -135,11 +136,11 @@ class AGSTrainer:
         if not os.path.exists(path):
             print(f"[RL-AGS] 未找到训练好的模型: {path}")
             print("[RL-AGS] 使用随机策略（未训练的 PPO）")
-            self.model = PPO("MlpPolicy", self.env, verbose=0)
+            self.model = PPO("MlpPolicy", self.env, verbose=0, device="cpu")
             return
 
         self.env = AGSEnvironment(self.config.get("env", {}))
-        self.model = PPO.load(path, env=self.env)
+        self.model = PPO.load(path, env=self.env, device="cpu")
         print(f"[RL-AGS] 模型已加载: {path}")
 
     def _collect_training_stats(self) -> Dict:

@@ -17,8 +17,13 @@ build/
 
 output/
 output*/
+artifacts/cache/
+artifacts/generated/
+artifacts/logs/
+artifacts/renders/
 experiments/results/
 !experiments/results/.gitkeep
+/docs/references/2025级-伍伦贡联合研究院_研究生学位论文相关文件/
 *.log
 *.tmp
 
@@ -28,3 +33,17 @@ experiments/results/
 *.pptx
 *.pdf
 ~$*
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.idx
+*.ilg
+*.ind
+*.lof
+*.lot
+*.nlo
+*.nls
+*.out
+*.toc

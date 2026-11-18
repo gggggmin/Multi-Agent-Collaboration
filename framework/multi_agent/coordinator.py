@@ -62,6 +62,8 @@ class Coordinator:
         current_cases = []
         audit_result = {"passed": False, "issues": []}
         max_iter = MAX_ITERATIONS
+        accepted = False
+        termination_status = "running"
 
         # RL-AGS: 延迟加载训练器
         ags_trainer = self._init_ags() if self.use_rl else None
@@ -108,15 +110,47 @@ class Coordinator:
                 ags_trainer, iteration, audit_result, coverage_estimate
             )
 
-            if passed or should_stop:
-                reason = "审计通过" if passed else "RL 决策终止"
+            if passed:
+                accepted = True
+                termination_status = "accepted_audit"
+                self.history[-1]["decision"] = "accept"
+                self.history[-1]["decision_source"] = "auditor"
+                print(f"[博弈] 第 {iteration} 轮结束: 审计通过")
+                break
+
+            if should_stop:
+                accepted = True
+                termination_status = "accepted_policy"
+                self.history[-1]["decision"] = "accept"
+                self.history[-1]["decision_source"] = "rl_policy"
+                reason = "RL 决策终止"
                 print(f"[博弈] 第 {iteration} 轮结束: {reason}")
                 break
+
+            self.history[-1]["decision"] = "continue"
+            self.history[-1]["decision_source"] = (
+                "safety_constraint"
+                if any(
+                    issue.get("severity") == "error"
+                    for issue in audit_result.get("issues", [])
+                )
+                else "rl_policy_or_fallback"
+            )
+
+        if not accepted:
+            termination_status = "failed_max_iterations"
+            print(
+                "[博弈] 异常结束: 达到最大轮次但审计仍未通过，"
+                "结果禁止进入代码生成"
+            )
 
         return {
             "module": module,
             "total_iterations": iteration,
             "passed": audit_result.get("passed", False),
+            "accepted": accepted,
+            "eligible_for_codegen": accepted,
+            "termination_status": termination_status,
             "cases": current_cases,
             "audit_summary": audit_result.get("summary", ""),
             "history": self.history,

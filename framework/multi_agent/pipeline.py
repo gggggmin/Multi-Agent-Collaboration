@@ -51,10 +51,15 @@ class AgentPipeline:
         cases = [
             case
             for module_result in generation.values()
+            if module_result.get("eligible_for_codegen", False)
             for case in module_result.get("cases", [])
         ]
 
-        page_files, test_files = self._run_code_generation(cases)
+        if cases:
+            page_files, test_files = self._run_code_generation(cases)
+        else:
+            page_files, test_files = [], []
+            print("[Pipeline] no audited cases eligible for code generation")
         execution_results = self._run_execution(test_files) if self.execute_tests else []
         healing_results = (
             self._run_healing(execution_results) if self.heal_failures else []
@@ -111,6 +116,11 @@ class AgentPipeline:
                 "skipped": False,
                 "total_iterations": result.get("total_iterations", 0),
                 "passed": result.get("passed", False),
+                "accepted": result.get("accepted", False),
+                "eligible_for_codegen": result.get("eligible_for_codegen", False),
+                "termination_status": result.get(
+                    "termination_status", "unknown"
+                ),
                 "audit_summary": result.get("audit_summary", ""),
                 "cases": result.get("cases", []),
                 "history": result.get("history", []),
